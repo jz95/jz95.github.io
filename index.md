@@ -6,8 +6,8 @@ layout: default
 Jie Zhou is a now a master student in University of Edinburgh, interested in NLP and Machine Learning. He used to working on physical ocengraphy and running numerical models when he was still an undergraduate. But he escaped from modelling the unstable and mysterious Nature and now has switched to explore Human Languages, which seems even more complicated.
 
 # Education
-|                   |                        |             |
-|:------------------|:-----------------------|:------------|
+| program           | school                 | time        |
+|-------------------|------------------------|-------------|
 |Msc. Data Science  | University of Edinburgh| 2018-present|
 |Bsc. Marine Science| Zhejiang University    | 2013-2017   |
 
@@ -16,8 +16,8 @@ Jie Zhou is a now a master student in University of Edinburgh, interested in NLP
 C/C++, MatLab, Python
 ```
 # Experience
-|                      |                   |              |
-|:---------------------|:------------------|:-------------|
+|     position         |   company         |    time      |
+|----------------------|-------------------|--------------|
 |Internship-Data Mining| Sogou Inc.        | 2018.1-2018.6|
 
 # Projects
