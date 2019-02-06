@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # About Me
 Jie Zhou is a now a master student in University of Edinburgh, interested in NLP and Machine Learning. He used to working on physical ocengraphy and running numerical models when he was still an undergraduate. But he escaped from modelling the unstable and mysterious Nature and now has switched to explore Human Languages, which seems even more complicated.
 
