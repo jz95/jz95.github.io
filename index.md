@@ -3,7 +3,7 @@ layout: default
 ---
 
 # About Me
-Jie Zhou is a now a master student in School of Informatics, University of Edinburgh, interested in NLP and Machine Learning. He used to be a modeller in physical ocengraphy. Being confused with the unstable and mysterious law hidden behind the nature, he escaped and now switches to explore Human Languages, which however seems even more complicated.
+Jie Zhou is a now a master student in School of Informatics, University of Edinburgh, interested in NLP and Machine Learning. He was born in small city, [Yuyao](https://en.wikipedia.org/wiki/Yuyao), located in the east of China. He used to be a modeller in physical ocengraphy. Being confused with the unstable and mysterious law hidden behind the nature, he escaped and now switches to explore Human Languages, which however seems even more complicated.
 
 # Education
 
