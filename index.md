@@ -20,7 +20,7 @@ Jie Zhou is a now a master student in School of Informatics, University of Edinb
 
 # Projects
 ### In Progress
-* Exploiting Predictable Document Sub-structure in Neural Machine Translation -- in _in__ UoE
+* Exploiting Predictable Document Sub-structure in Neural Machine Translation -- _in_ UoE
 * Abstractive Text Summerization using Seq2Seq Model -- _in_ UoE
 * [DEMO for Reinforcement Learning Lecture](https://github.com/JZ95/RLPractical) -- _in_ UoE
 
