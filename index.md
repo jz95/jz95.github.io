@@ -20,15 +20,18 @@ Jie Zhou is a now a master student in School of Informatics, University of Edinb
 
 # Projects
 ### In Progress
-* Exploiting Predictable Document Sub-structure in Neural Machine Translation -- Supervised by *[Prof. Bonnie Webber](http://homepages.inf.ed.ac.uk/bonnie/), [Dr. Rachel Bawden](https://rbawden.github.io/), [Dr. Annie Louis](https://homepages.inf.ed.ac.uk/alouis/index.html)*
+* Exploiting Predictable Document Sub-structure in Neural Machine Translation -- _in_ UoE
+&emsp;&emsp;Supervised by *[Prof. Bonnie Webber](http://homepages.inf.ed.ac.uk/bonnie/), [Dr. Rachel Bawden](https://rbawden.github.io/), [Dr. Annie Louis](https://homepages.inf.ed.ac.uk/alouis/index.html)*
 
 ### Finished
 * Abstractive Text Summerization using Seq2Seq Model -- _in_ UoE
 * DEMO for Reinforcement Learning Lecture -- _in_ UoE
 * Kaggle Competition -- [Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk) (ranking **113/7198**) -- _solo_
 * Development of Backtesting Platform for Algorithmic Trading -- _in_ Sogou Inc.
-* Numeric Study on Cross Continental Shelf Current in SCS  -- _in_ Zhejiang University
-* Numeric Analysis on Tidal Asymmetry -- _in_ Zhejiang University
+* Numeric Study on Cross Continental Shelf Current in SCS  -- _in_ Zhejiang Univ.
+&emsp;&emsp;&emsp;&emsp;Supervised by *[Dr. Yeping Yuan](https://person.zju.edu.cn/en/yyping)*
+* Numeric Analysis on Tidal Asymmetry -- _in_ Zhejiang Univ.
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Supervised by *[Dr. Dan Song](https://person.zju.edu.cn/en/dan_song)*
 
 # Awards
 * 2017 [PACON](http://blog.hawaii.edu/pacon/about/organization/) International -- Best Student Presentation.
