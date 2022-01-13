@@ -1,0 +1,3 @@
+- fix typo
+- change icon
+- add stastics
