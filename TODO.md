@@ -1,3 +1,3 @@
-- fix typo
-- change icon
+- ~~fix typo~~
+- ~~change icon~~
 - add stastics
