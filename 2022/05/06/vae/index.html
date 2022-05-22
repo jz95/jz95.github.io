@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="IntroA Variational Auto-Encoder(VAE) is a widely used approach in unsupervised learning for complicated distributions. Though often associated with auto-encoders in terms of the similarity in network">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gentle Introduction to Variational Auto-Encoder">
+<meta property="og:url" content="http://jz95.github.io/2022/05/06/vae/index.html">
+<meta property="og:site_name" content="jzhou.space">
+<meta property="og:description" content="IntroA Variational Auto-Encoder(VAE) is a widely used approach in unsupervised learning for complicated distributions. Though often associated with auto-encoders in terms of the similarity in network">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://jz95.github.io/images/vae/ae.png">
+<meta property="og:image" content="http://jz95.github.io/images/vae/vae.png">
+<meta property="og:image" content="http://jz95.github.io/images/vae/mnist.png">
+<meta property="article:published_time" content="2022-05-06T20:08:23.000Z">
+<meta property="article:modified_time" content="2022-05-22T16:08:54.487Z">
+<meta property="article:author" content="J">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://jz95.github.io/images/vae/ae.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Gentle Introduction to Variational Auto-Encoder</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="jzhou.space" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/01/09/hello-world/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://jz95.github.io/2022/05/06/vae/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://jz95.github.io/2022/05/06/vae/&text=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://jz95.github.io/2022/05/06/vae/&title=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://jz95.github.io/2022/05/06/vae/&is_video=false&description=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Gentle Introduction to Variational Auto-Encoder&body=Check out this article: http://jz95.github.io/2022/05/06/vae/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://jz95.github.io/2022/05/06/vae/&title=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://jz95.github.io/2022/05/06/vae/&title=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://jz95.github.io/2022/05/06/vae/&title=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://jz95.github.io/2022/05/06/vae/&title=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://jz95.github.io/2022/05/06/vae/&name=Gentle Introduction to Variational Auto-Encoder&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://jz95.github.io/2022/05/06/vae/&t=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Intro"><span class="toc-number">1.</span> <span class="toc-text">Intro</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PART-I-Towards-Variational-AutoEncoder"><span class="toc-number">2.</span> <span class="toc-text">PART I: Towards Variational AutoEncoder</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Problem-Scenario"><span class="toc-number">2.1.</span> <span class="toc-text">The Problem Scenario</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Variational-Methods"><span class="toc-number">2.2.</span> <span class="toc-text">Variational Methods</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Learning-Algorithm"><span class="toc-number">2.3.</span> <span class="toc-text">The Learning Algorithm</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#One-More-Step-Variational-AutoEncoder"><span class="toc-number">2.4.</span> <span class="toc-text">One More Step: Variational AutoEncoder</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PART-II-VAE-Practical"><span class="toc-number">3.</span> <span class="toc-text">PART II: VAE Practical</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a-VAE-for-MNIST"><span class="toc-number">3.1.</span> <span class="toc-text">a VAE for MNIST</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Implementation-by-Pytorch"><span class="toc-number">3.2.</span> <span class="toc-text">Implementation by Pytorch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Experiment-on-MNIST-dataset"><span class="toc-number">3.3.</span> <span class="toc-text">Experiment on MNIST dataset</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Gentle Introduction to Variational Auto-Encoder
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">J</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-05-06T20:08:23.000Z" itemprop="datePublished">2022-05-06</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h2><p>A Variational Auto-Encoder(VAE) is a widely used approach in unsupervised learning for complicated distributions. Though often associated with <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Autoencoder">auto-encoders</a> in terms of the similarity in network architecture, a VAE’s mathematical formulation is quite different from a auto-encoder. Therefore we are gonna talk about how VAE bridges the “variational” method and the “auto-encoder” theory as shown in its name. </p>
+<p>This blog is divided into two parts. The <code>PART I</code> will introduce you the problem scenario in which vae is designed for, </p>
+<p>compares </p>
+<p>In <code>PART II</code>, we will implement our own VAE model with pytorch and run the experiment on MNIST dataset.</p>
+<p>You are always encouraged to check the original paper, <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1312.6114">Auto-Encoding Variational Bayes</a>, for further detailed information. A google colab <a target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1_fvinFbA70QDnI3idDjiVn-DlOGxs_Bx?usp=sharing">notebook</a> developed for <code>PART II</code> is open for readers to explore.</p>
+<h2 id="PART-I-Towards-Variational-AutoEncoder"><a href="#PART-I-Towards-Variational-AutoEncoder" class="headerlink" title="PART I: Towards Variational AutoEncoder"></a>PART I: Towards Variational AutoEncoder</h2><h3 id="The-Problem-Scenario"><a href="#The-Problem-Scenario" class="headerlink" title="The Problem Scenario"></a>The Problem Scenario</h3><p>We will start this blog by firstly explaining the connection VAEs have with the term – “variational”. Before that, however, we have to introduce the background of the story.</p>
+<!-- In [Bayesian Statistics](https://en.wikipedia.org/wiki/Bayesian_statistics), probability expresses a degree of belief in an event. The degree of belief may be based on prior knowledge, and will be updated after observing new data. In this section, we would explain the process about how "the degree of belief" being updated with a more concrete scenario. -->
+
+<p>Let’s consider some dataset $\mathbf{X} &#x3D; \{ \mathbf{x}^{(i)} \}_{i&#x3D;1}^N$ consisting of $N$ i.i.d. samples of a random variable $\mathbf{x}$ (either scalar or vector). The data are assumed to be generated by some random process, involving an unobserved random variable $\mathbf{z}$ (i.e. the latent variable). </p>
+<p>The generative process has two steps: </p>
+<ol>
+<li>a value $\mathbf{z}^{(i)}$ is generated from some prior distribution $p_{\theta}(\mathbf{z})$; </li>
+<li>a value $\mathbf{x}^{(i)}$ is generated from some conditional distribution $p_{\theta}(\mathbf{x}|\mathbf{z}&#x3D;\mathbf{z}^{(i)})$ dependent on $\mathbf{z}^{(i)}$;</li>
+</ol>
+<p>where the prior $p_{\theta}(\mathbf{z})$ and likelihood $p_{\theta}(\mathbf{x}|\mathbf{z})$ are both parametric distributions of a unknown parameter set $\theta$.</p>
+<p>We are interested in solving the following problems related to the given scenario:</p>
+<ol>
+<li>the posterior inference of the latent variable $\mathbf{z}$ given an observed value $\mathbf{x}$ for a choice of parameters $\theta$, i.e. $p_\theta(\mathbf{z}|\mathbf{x})$, which is useful for representation learning.</li>
+<li>the marginal inference of the variable $\mathbf{x}$, i.e. $p(\mathbf{x})$, which is useful in the scenarios where a prior over $\mathbf{x}$ is required.</li>
+<li>the estimation for the parameter set $\theta$, with which one can mimic the above-mentioned generative process and create artificial data.</li>
+</ol>
+<h3 id="Variational-Methods"><a href="#Variational-Methods" class="headerlink" title="Variational Methods"></a>Variational Methods</h3><p>In this section, we will introduce you variational method used for solving the three problems. Now let us begin with the posterior inference problem, i.e. calculating $p_\theta(\mathbf{z}|\mathbf{x}&#x3D;\mathbf{x}^{(i)})$. We can write down the posterior probability by applying Bayes’s Theorem and probability chain’s rule:<br>$$<br>\begin{aligned}<br>p(\mathbf{z}|\mathbf{x})<br>    &amp; &#x3D; \frac{p(\mathbf{z},\mathbf{x})}{p(\mathbf{x})} \\<br>    &amp; &#x3D; \frac{p(\mathbf{x}&#x3D;\mathbf{x}^{(i)}|\mathbf{z}&#x3D;\mathbf{z}^{(i)})p(\mathbf{z}&#x3D;\mathbf{z}^{(i)})}{\int_{\mathbf{z}^{(i)}} p(\mathbf{x}&#x3D;\mathbf{x}^{(i)}|\mathbf{z}&#x3D;\mathbf{z}^{(i)})p(\mathbf{z}&#x3D;\mathbf{z}^{(i)}) d\mathbf{z}^{(i)}} \\<br>    &amp; &#x3D; \frac{p(\mathbf{x}|\mathbf{z}) p(\mathbf{z})}{\int_{\mathbf{z}} p(\mathbf{x}|\mathbf{z}) p(\mathbf{z}) d\mathbf{z}} &amp; \mathrm{simplify\ the\ notation}<br>\end{aligned}<br>$$</p>
+<p>Since we have known the specification of the prior distribution $p_\theta(\mathbf{z})$ and the likelihood $p_\theta(\mathbf{x}^{(i)}|\mathbf{z})$ defined by the generative process, theoretically, the posterior $p_\theta(\mathbf{z}|\mathbf{x}^{(i)})$ can be calculated just by doing the integral $\int_{\mathbf{z}} p_\theta(\mathbf{x}^{(i)}|\mathbf{z}) p(\mathbf{z}) d\mathbf{z}$, which involves enumerating all the possible values the unobservable variable $\mathbf{z}$ may have.</p>
+<p>However without any simplifying assumptions on $p_\theta(\mathbf{z}|\mathbf{x}^{(i)})$ or $p_\theta(\mathbf{z})$, the integral is intractable, which means the computation complexity of any approach for evaluating the integral including the enumeration operation is exponential. </p>
+<p>Variational methods are designed for such situations and allows us to avoid the intractable integral by transforming the inference problem to a optimization problem. In variational methods, a recognition model $q_\phi(\mathbf{z}|\mathbf{x}^{(i)})$ is proposed as an approximation to the true posterior $p_\theta(\mathbf{z}|\mathbf{x}^{(i)})$. By minimizing the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">KL-divergence</a> between $q_\phi(\mathbf{z}|\mathbf{x}^{(i)})$ and $p_\theta(\mathbf{z}|\mathbf{x}^{(i)})$, we can solve the posterior inference problem. To simplify computation, both the parameters $\phi$ and $\theta$ of the recognition model and the generative model will be jointly optimized here.</p>
+<p>$$\phi^*, \theta^* &#x3D; \mathrm{argmax_{\phi, \theta}} \ KL\big(q_{\phi}(\mathbf{z}) ||p_\theta(\mathbf{z}|\mathbf{x}^{(i)})\big)$$</p>
+<!-- What a Bayesian statistician concerns about is how our belief about the set of unobserved variables $\mathbf{Z}=\\{\mathbf{z}^{(i)}\\}_{i=1}^N$ changed after seeing each value $\mathbf{x}^{(i)}$ within the dataset $\mathbf{X}$, i.e. the posterior probability $p(\mathbf{Z}|\mathbf{X})$. -->
+
+<!-- We can write down the posterior probability by applying Bayes's Theorem and probability chain's rule:
+$$
+\begin{aligned}
+p(\mathbf{Z}|\mathbf{X}) 
+    & = \frac{p(\mathbf{Z},\mathbf{X})}{p(\mathbf{X})} = \frac{p(\mathbf{X}|\mathbf{Z}) p(\mathbf{Z})}{\prod_{i=1}^{N} p(\mathbf{x}=\mathbf{x}^{(i)})} \\\\
+    & = \frac{\prod_{i=1}^{N} p(\mathbf{x}=\mathbf{x}^{(i)}|\mathbf{z}=\mathbf{z}^{(i)})p(\mathbf{z}=\mathbf{z}^{(i)})}{\prod_{i=1}^{N} \int_{\mathbf{z}^{(i)}} p(\mathbf{x}=\mathbf{x}^{(i)}|\mathbf{z}=\mathbf{z}^{(i)})p(\mathbf{z}=\mathbf{z}^{(i)}) d\mathbf{z}^{(i)}} \\\\
+    & = \prod_{i=1}^{N} \frac{p(\mathbf{x}|\mathbf{z}) p(\mathbf{z})}{\int_{\mathbf{z}} p(\mathbf{x}|\mathbf{z}) p(\mathbf{z}) d\mathbf{z}} & \mathrm{simplify\ the\ notation}
+\end{aligned}
+$$ -->
+
+<!-- The core problem by now is to solve the posterior distribution $p(\mathbf{z}|\mathbf{x}) = \frac{p(\mathbf{x}|\mathbf{z}) p(\mathbf{z})}{\int_{\mathbf{z}} p(\mathbf{x}|\mathbf{z}) p(\mathbf{z}) d\mathbf{z}}$, which is called ["inference"](https://en.wikipedia.org/wiki/Bayesian_inference) in Bayesian statistics.
+
+ -->
+
+<p>Parameters ${\phi}$ and $\theta$ would be omitted for simplicity in the following deduction.</p>
+<p>$$<br>\begin{aligned}<br>KL\big( q(\mathbf{z}|\mathbf{x}^{(i)})|| p(\mathbf{z}|\mathbf{x}^{(i)}) \big) &amp; &#x3D; \int_\mathbf{z} q(\mathbf{z}|\mathbf{x}) \mathrm{log}\frac{q(\mathbf{z}|\mathbf{x})}{p(\mathbf{z}|\mathbf{x})} d\mathbf{z} &amp; \\<br>&amp; &#x3D; \mathbb{E_q}[\mathrm{log} q(\mathbf{z}|\mathbf{x})] - \mathbb{E_q}[\mathrm{log} p(\mathbf{z}|\mathbf{x})] &amp; \mathrm{rewrite\ as\ the\ form\ of\ expectation} \\<br>&amp; &#x3D; \mathbb{E_q}[\mathrm{log} q(\mathbf{z}|\mathbf{x})] - \mathbb{E_q}[\mathrm{log} p(\mathbf{x}, \mathbf{z})] + {E_q}[\mathrm{log} p(\mathbf{x})] &amp; p(\mathbf{z}|\mathbf{x}) &#x3D; \frac{p(\mathbf{x}, \mathbf{z})}{p(\mathbf{x})} \\<br>&amp; &#x3D; \mathbb{E_q}[\mathrm{log} q(\mathbf{z}|\mathbf{x})] - \mathbb{E_q}[\mathrm{log} p(\mathbf{x}, \mathbf{z})] + \mathrm{log} p (\mathbf{x}) &amp; p(\mathbf{x}) \mathrm{\ is\ irrelevant\ of\ } q(\mathbf{z}) \\<br>&amp; &#x3D; -\mathrm{ELBO}(q) + \mathrm{log} p (\mathbf{x})<br>\end{aligned}<br>$$</p>
+<p>The term $\mathrm{log} p (\mathbf{x})$ is a constant, thus can be ignored during the optimization process. Furthermore, we rewrite the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Evidence_lower_bound">evidence lower bound</a>, ELBO:<br>$$<br>\begin{aligned}<br>\mathrm{ELBO}(q)<br>&amp; &#x3D; - \mathbb{E_q}[\mathrm{log} q(\mathbf{z}|\mathbf{x})] + \mathbb{E_q}[\mathrm{log} p(\mathbf{x}, \mathbf{z})] \\<br>&amp; &#x3D; - \mathbb{E_q}[\mathrm{log} q(\mathbf{z}|\mathbf{x})] - \mathbb{E_q}[\mathrm{log} p(\mathbf{z})] + \mathbb{E_q}[\mathrm{log} p(\mathbf{x}| \mathbf{z})] \\<br>&amp; &#x3D; -KL\big(q(\mathbf{z}|\mathbf{x}) ||p(\mathbf{z})\big) + \mathbb{E_q}[\mathrm{log} p(\mathbf{x}| \mathbf{z})]<br>\end{aligned}<br>$$</p>
+<p>The original optimization problem is by now equivalent to:</p>
+<p>$$<br>\phi^*,\theta^* &#x3D; \mathrm{argmax_{\phi, \theta}}\ -KL\big(q_{\phi}(\mathbf{z}|\mathbf{x}) ||p_\theta(\mathbf{z})\big) + \mathbb{E_{q_{\phi}(\mathbf{z}|\mathbf{x})}}[\mathrm{log} p_\theta(\mathbf{x}| \mathbf{z})]<br>$$</p>
+<h3 id="The-Learning-Algorithm"><a href="#The-Learning-Algorithm" class="headerlink" title="The Learning Algorithm"></a>The Learning Algorithm</h3><p>In the previous section, with the help of variational method we get rid of the intractable integral in the posterior inference problem. By now the next challenge waiting for us is to decide what algorithm is used for solving the optimization problem. All three problems mentioned in the <code>The Problem Scenario</code> section will be solved if this challenge can be properly handled.</p>
+<p>Just like other deep learning models, we sort to the stochastic gradient descent for solving the optimization problem. The objective function is<br>$$<br>\mathcal{L}(\phi,\theta, \mathbf{x^{(i)}}) &#x3D; -KL\big(q_{\phi}(\mathbf{z}|\mathbf{x}^{(i)}) ||p_\theta(\mathbf{z})\big) + \frac{1}{L}\sum_{l&#x3D;1}^L [\mathrm{log} p_\theta(\mathbf{x}^{(i)}| \mathbf{z}^{(i, l)})],<br>$$</p>
+<p>where the expectation term is approximated by using Monte Carlo method, i.e. averaging the samples $\mathbf{z}^{(i, l)})$ drawn from $q_{\phi}(\mathbf{z}|\mathbf{x}^{(i)}$. With a differentiable objective function, the full stochastic gradient descent algorithm for VAE is as follows:</p>
+<ol>
+<li>get the minibatch consisting of $M$ datapoints;</li>
+<li>compute minibatch loss $\frac{1}{M}\sum_{i&#x3D;1}^M\mathcal{L}(\phi,\theta, \mathbf{x^{(i)}})$;</li>
+<li>compute gradients $\frac{1}{M}\sum_{i&#x3D;1}^M \nabla_{\phi, \theta} \mathcal{L}(\phi,\theta, \mathbf{x^{(i)}})$;</li>
+<li>update parameters $\phi, \theta$;</li>
+<li>repeat the first 4 steps util convergence.</li>
+</ol>
+<p>In practical, the samples $\mathbf{z}^{(i, l)})$ are not drawn directly from $q_{\phi}(\mathbf{z}|\mathbf{x}^{(i)}$, because $q$ can be arbitrary complicated distribution and difficult to sample. Therefore we sort to reparameterization trick by setting $\mathbf{z}^{(i, l)} &#x3D; g_{\phi}(\epsilon^{(i;l)}; \mathbf{x}^{(i)})$, where $g_{\phi}$ can be any neural network which takes $\epsilon^{(i;l)}$ and $\mathbf{x}^{(i)}$ as input and the noise $\epsilon^{(i;l)}$ is sampled from some simple distribution $p(\epsilon)$ (e.g. gaussian).</p>
+<h3 id="One-More-Step-Variational-AutoEncoder"><a href="#One-More-Step-Variational-AutoEncoder" class="headerlink" title="One More Step: Variational AutoEncoder"></a>One More Step: Variational AutoEncoder</h3><p>Finally, we make it to the “autoencoder” part in the journey of explaining the name of VAE. </p>
+<p><img src="/images/vae/ae.png" alt="arch" title="auto-encoder"><br>In auto-encoders’ world, a datapoint $\mathbf{x}^{(i)}$ is processed by the encoder $f(\mathbf{x})$ and then a code $\mathbf{z}^{(i)}$ is produced. The decoder $g(\mathbf{z})$ takes the code $\mathbf{z}^{(i)}$ as input and produces the reconstruction $\hat{\mathbf{x}}^{(i)}$. The reconstruction loss $\mathcal{L}(\mathbf{x}^{(i)})$, is often the squared error, $||\hat{\mathbf{x}}^{(i)} - \mathbf{x}^{(i)}||^2$.</p>
+<p><img src="/images/vae/vae.png" alt="arch" title="vae"><br>When it comes to VAEs, the unobserved variables $\mathbf{z}$ can be interpreted as the code. In addition, the recognition model $q_{\phi}(\mathbf{z}|\mathbf{x})$ can be treated as a probabilistic encoder, since given a datapoint $\mathbf{x}$ it produces a distribution over the possible values of $\mathbf{z}$, while $p_\theta(\mathbf{x}| \mathbf{z})$ can be seen as a probabilistic decoder, since given a code $\mathbf{z}$, it produces a distribution over the possible corresponding values of $\mathbf{x}$.</p>
+<p>The log likelihood $\mathbb{E_{q_{\phi}(\mathbf{z}|\mathbf{x})}}[\mathrm{log} p_\theta(\mathbf{x}| \mathbf{z})]$ is used as the reconstruction loss. Besides, there is a KL divergence term in the objective function which acts as a regularizer and enforces the $q_{\phi}(\mathbf{z}|\mathbf{x}^{(i)}$ to stay close to the prior $p_{\theta}(\mathbf{z})$.</p>
+<h2 id="PART-II-VAE-Practical"><a href="#PART-II-VAE-Practical" class="headerlink" title="PART II: VAE Practical"></a>PART II: VAE Practical</h2><p>In this part, we will implement a VAE using Pytorch on our own according to the mathematics in the <code>PART I</code>, and run experiments on the MNIST dataset.</p>
+<h3 id="a-VAE-for-MNIST"><a href="#a-VAE-for-MNIST" class="headerlink" title="a VAE for MNIST"></a>a VAE for MNIST</h3><p>For the MNIST task, the VAE model architecture is constructed as follows:</p>
+<ul>
+<li><p>gaussian encoder<br>Due to its stable statical property and simplicity in sampling, we choose multi-variate gaussian as the encoder output distribution, where the mean and variance values are modelled by a feedforward network. </p>
+<p>  $$<br>  \begin{align}<br>  \mathbf{h} &amp; &#x3D; tanh(\mathbf{W_h}\mathbf{x} + \mathbf{b_h}) \\<br>  \mathbf{\mu} &amp; &#x3D; \mathbf{W_\mu}\mathbf{h} +  \mathbf{b_\mu}   \\<br>  \mathbf{\sigma}^2 &amp;&#x3D; exp(\mathbf{W_{\sigma^2}}\mathbf{h} +  \mathbf{b_{\sigma^2}}) \\<br>  q(\mathbf{z}|\mathbf{x}) &amp; &#x3D; \mathcal{N}(\mathbf{z}; \mathbf{\mu}, \mathbf{\sigma}^2 \mathbf{I})<br>  \end{align}<br>  $$</p>
+</li>
+<li><p>bernoulli decoder<br>The MNIST data are gray-scale images, of which each pixel can be represented as a float number between 0 and 1, therefore Bernoulli distribution become our natural choice for the decoder:<br>$$<br>\begin{align}<br>\mathbf{h’} &amp; &#x3D; tanh(\mathbf{W_h’}\mathbf{z} + \mathbf{b_h’}) \\<br>p(\mathbf{x}|\mathbf{z}) &amp; &#x3D; f_{\sigma}(\mathbf{W}\mathbf{h’} + \mathbf{b}) \\<br>\end{align}<br>$$<br>where $f_{\sigma}$ is the sigmoid activation function.</p>
+</li>
+</ul>
+<p><img src="/images/vae/mnist.png" alt="mnist" title="mnist-vae"></p>
+<h3 id="Implementation-by-Pytorch"><a href="#Implementation-by-Pytorch" class="headerlink" title="Implementation by Pytorch"></a>Implementation by Pytorch</h3><p>Here goes the pytorch code for implementing a VAE for the MNIST task.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GaussianEncoder</span>(<span class="params">torch.nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    modelling the prob q(z|x), where z, x are n-d, m-d vectors</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, dim_z, dim_x, dim_hidden</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(GaussianEncoder, self).__init__()</span><br><span class="line">        self.hidden_layer = torch.nn.Sequential(</span><br><span class="line">                                torch.nn.Linear(dim_x, dim_hidden), </span><br><span class="line">                                torch.nn.Tanh()</span><br><span class="line">                                )</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># transform hidden vector to gaussian mean</span></span><br><span class="line">        self.mean_transform_layer = torch.nn.Linear(dim_hidden, dim_z)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># transform hidden vector to gaussian variance</span></span><br><span class="line">        self.var_transform_layer = torch.nn.Linear(dim_hidden, dim_z)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_mean_and_var</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        :param x: the condition part, [batch, m]</span></span><br><span class="line"><span class="string">        :return: (mean, variance) [batch, n], [batch, n]</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">        h = self.hidden_layer(x)  <span class="comment"># [batch, h]</span></span><br><span class="line">        <span class="keyword">return</span> (self.mean_transform_layer(h), </span><br><span class="line">                    torch.exp(self.var_transform_layer(h)))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, z, x</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        give the log prob of p(z|x)</span></span><br><span class="line"><span class="string">        :param z: [batch, n]</span></span><br><span class="line"><span class="string">        :param x: [batch, m]</span></span><br><span class="line"><span class="string">        :return: [batch, ]</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        dim_z = z.shape[<span class="number">1</span>]</span><br><span class="line">        mean, var = self.get_mean_and_var(x)  <span class="comment"># [batch, n], [batch, n]</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># inversed covariance mat, [b, n, n]</span></span><br><span class="line">        inv_covar = torch.einsum(<span class="string">&#x27;bi, ij -&gt; bij&#x27;</span>, </span><br><span class="line">                                 <span class="number">1</span> / var, </span><br><span class="line">                                 torch.eye(dim_a))</span><br><span class="line">        <span class="comment"># gaussian pdf</span></span><br><span class="line">        exponent = - <span class="number">1</span> / <span class="number">2</span> * torch.einsum(<span class="string">&#x27;bi, bi -&gt; b&#x27;</span>, </span><br><span class="line">                                          torch.einsum(<span class="string">&#x27;bi, bij-&gt;bj&#x27;</span>, </span><br><span class="line">                                                        a - mean, </span><br><span class="line">                                                        inv_covar), </span><br><span class="line">                                          a - mean)  <span class="comment"># [b,]</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> - dim_a / <span class="number">2</span> * torch.log(torch.tensor(<span class="number">2</span> * torch.pi)) \</span><br><span class="line">               - <span class="number">1</span> / <span class="number">2</span> * torch.<span class="built_in">sum</span>(torch.log(var), dim=<span class="number">1</span>) + exponent</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">generate</span>(<span class="params">self, b</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        :param b: [batch, dim_b]</span></span><br><span class="line"><span class="string">        :return: [batch, dim_a]</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">            mean, var = self.get_mean_and_var(b)</span><br><span class="line">            <span class="keyword">return</span> mean + torch.sqrt(var) * torch.randn(var.shape)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BernoulliDecoder</span>(<span class="params">torch.nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    The decoder modelling likelihood p(x|z),</span></span><br><span class="line"><span class="string">    suitable for binary-valued data, or the real-value between 0 and 1</span></span><br><span class="line"><span class="string">    described in the Appendix C</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, dim_latent, dim_input, dim_hidden</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(BernoulliDecoder, self).__init__()</span><br><span class="line">        self.layer = torch.nn.Sequential(</span><br><span class="line">            torch.nn.Linear(dim_latent, dim_hidden),</span><br><span class="line">            torch.nn.Tanh(),</span><br><span class="line">            torch.nn.Linear(dim_hidden, dim_input),</span><br><span class="line">            torch.nn.Sigmoid()</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x, z</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        evaluate the log - prob of p(x|z)</span></span><br><span class="line"><span class="string">        :param x: [batch, n]</span></span><br><span class="line"><span class="string">        :param z: the given latent variables, [b, m]</span></span><br><span class="line"><span class="string">        :return: [batch, ]</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        y = self.layer(z)  <span class="comment"># [b, n]</span></span><br><span class="line">        <span class="keyword">return</span> torch.<span class="built_in">sum</span>(x * torch.log(y) + (<span class="number">1</span> - x) * torch.log(<span class="number">1</span> - y), dim=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">generate</span>(<span class="params">self, z</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        generate data points given the latent variables, i.e. draw x ~ p(x|z)</span></span><br><span class="line"><span class="string">        :param z: the given latent variables, [batch, m]</span></span><br><span class="line"><span class="string">        :return: generated data points, [batch, n]</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">            <span class="comment"># [batch, n]</span></span><br><span class="line">            y = self.layer(z)</span><br><span class="line">            <span class="keyword">return</span> torch.where(torch.rand(y.shape) &gt; y, <span class="number">0.</span>, <span class="number">1.</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">prob</span>(<span class="params">self, z</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        evaluate the conditional probability</span></span><br><span class="line"><span class="string">        :param z: the given latent variables, [batch, m]</span></span><br><span class="line"><span class="string">        :return: [batch, n], 0 &lt;= elem &lt;= 1</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">            <span class="keyword">return</span> self.layer(z)</span><br></pre></td></tr></table></figure>
+
+<p>Below is the full code for the VAE model that consists of a gaussian encoder and a bernoulli decoder.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VAEModel</span>(<span class="params">torch.nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    the variational auto-encoder for MNIST data, see the original paper for reference:</span></span><br><span class="line"><span class="string">    https://arxiv.org/abs/1312.6114</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, dim_latent, dim_input, dim_hidden</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(VAEModel, self).__init__()</span><br><span class="line">        self.encoder = GaussianMLP(dim_latent, dim_input, dim_hidden)</span><br><span class="line">        self.decoder = BernoulliDecoder(dim_latent, dim_input, dim_hidden)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">compute_loss</span>(<span class="params">self, data, reduction=<span class="string">&#x27;mean&#x27;</span></span>):</span></span><br><span class="line">        <span class="keyword">if</span> reduction == <span class="string">&#x27;mean&#x27;</span>:</span><br><span class="line">            <span class="keyword">return</span> - torch.mean(self.forward(data))</span><br><span class="line">        <span class="keyword">elif</span> reduction == <span class="string">&#x27;sum&#x27;</span>:</span><br><span class="line">            <span class="keyword">return</span> - torch.<span class="built_in">sum</span>(self.forward(data))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>) -&gt; torch.Tensor:</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        corresponds to equation (10) in the original paper</span></span><br><span class="line"><span class="string">        :return: the estimated ELBO value, i.e. the objective function</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        mean, var = self.encoder.get_mean_and_var(x)  <span class="comment"># [b, n], [b, n]</span></span><br><span class="line">        z = mean + torch.sqrt(var) * torch.randn(var.shape).to(x.device)</span><br><span class="line">        <span class="comment"># the KL divergence term plus the MC estimate of decoder</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span> / <span class="number">2</span> * torch.<span class="built_in">sum</span>(<span class="number">1</span> + torch.log(var) - mean ** <span class="number">2</span> - var, dim=<span class="number">1</span>) + self.decoder(x, z)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Experiment-on-MNIST-dataset"><a href="#Experiment-on-MNIST-dataset" class="headerlink" title="Experiment on MNIST dataset"></a>Experiment on MNIST dataset</h3><p>We tested the convergence of our VAE on MNIST dataset.</p>
+<p>Also, we analyzed the 2D manifold learned from the given data.</p>
+<p>google colab <a target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1_fvinFbA70QDnI3idDjiVn-DlOGxs_Bx?usp=sharing">notebook</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Intro"><span class="toc-number">1.</span> <span class="toc-text">Intro</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PART-I-Towards-Variational-AutoEncoder"><span class="toc-number">2.</span> <span class="toc-text">PART I: Towards Variational AutoEncoder</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Problem-Scenario"><span class="toc-number">2.1.</span> <span class="toc-text">The Problem Scenario</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Variational-Methods"><span class="toc-number">2.2.</span> <span class="toc-text">Variational Methods</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Learning-Algorithm"><span class="toc-number">2.3.</span> <span class="toc-text">The Learning Algorithm</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#One-More-Step-Variational-AutoEncoder"><span class="toc-number">2.4.</span> <span class="toc-text">One More Step: Variational AutoEncoder</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PART-II-VAE-Practical"><span class="toc-number">3.</span> <span class="toc-text">PART II: VAE Practical</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a-VAE-for-MNIST"><span class="toc-number">3.1.</span> <span class="toc-text">a VAE for MNIST</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Implementation-by-Pytorch"><span class="toc-number">3.2.</span> <span class="toc-text">Implementation by Pytorch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Experiment-on-MNIST-dataset"><span class="toc-number">3.3.</span> <span class="toc-text">Experiment on MNIST dataset</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://jz95.github.io/2022/05/06/vae/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://jz95.github.io/2022/05/06/vae/&text=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://jz95.github.io/2022/05/06/vae/&title=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://jz95.github.io/2022/05/06/vae/&is_video=false&description=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Gentle Introduction to Variational Auto-Encoder&body=Check out this article: http://jz95.github.io/2022/05/06/vae/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://jz95.github.io/2022/05/06/vae/&title=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://jz95.github.io/2022/05/06/vae/&title=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://jz95.github.io/2022/05/06/vae/&title=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://jz95.github.io/2022/05/06/vae/&title=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://jz95.github.io/2022/05/06/vae/&name=Gentle Introduction to Variational Auto-Encoder&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://jz95.github.io/2022/05/06/vae/&t=Gentle Introduction to Variational Auto-Encoder"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2018-2022
+    J
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
